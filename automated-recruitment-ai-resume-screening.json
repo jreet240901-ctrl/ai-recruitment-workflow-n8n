@@ -1,0 +1,725 @@
+{
+  "name": "Automated Recruitment Workflow & AI Resume Screening Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1HsIItv4YqBPtnYV8fju4IRSsQZE9k4eDcuw3yprAkTI",
+          "mode": "list",
+          "cachedResultName": "Kandhari Beverages Pvt. Ltd. — Employment Application Form (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HsIItv4YqBPtnYV8fju4IRSsQZE9k4eDcuw3yprAkTI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 194280741,
+          "mode": "list",
+          "cachedResultName": "Form responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HsIItv4YqBPtnYV8fju4IRSsQZE9k4eDcuw3yprAkTI/edit#gid=194280741"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        0
+      ],
+      "id": "3de42bc8-fc2a-46f4-b6b5-dc204b6bf1e6",
+      "name": "New Application Received",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "QEpKEzwCBTc7hPxT",
+          "name": "Google Sheets Trigger OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        208
+      ],
+      "id": "5518d049-e698-4a7f-a7da-6e03bf94d81f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PIY5V91yRcKnkQGW",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets Trigger').item.json['Email Address'] }}",
+        "subject": "= Application Received – Kandhari Beverages Pvt. Ltd.",
+        "emailType": "text",
+        "message": "=Dear Applicant,\n\nThank you for your interest in joining Kandhari Beverages Pvt. Ltd. and for taking the time to submit your application.\n\nWe are pleased to confirm that your application has been successfully received and forwarded to our Human Resources team for review.\n\nOur recruitment team will carefully evaluate your qualifications, experience, and suitability for the role. If your profile is shortlisted, we will contact you regarding the next stages of the selection process.\n\nWe kindly request your patience during the review period and appreciate your interest in building a career with Kandhari Beverages Pvt. Ltd.\n\nThank you for considering us as a potential employer.\n\nKind Regards,\n\nHuman Resources Department\nKandhari Beverages Pvt. Ltd.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "69f690e3-522f-4336-933e-4ec0827e63f8",
+      "name": "Send Applicant Acknowledgement",
+      "webhookId": "93ac55a2-309a-434d-81b0-ed1303e6158c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "v3oNx5OyYZZMHse4",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Full Name'] }}",
+        "options": {
+          "systemMessage": "=You are an experienced Human Resources Executive representing Kandhari Beverages Private Limited (KBPL), an authorized Coca-Cola bottling partner.\n\nYour role is to generate professional, courteous, and grammatically correct email responses to candidates who have submitted job applications through the official KBPL recruitment process.\n\nResponsibilities:\n\n* Acknowledge receipt of the candidate's application.\n* Thank the candidate for their interest in Kandhari Beverages Pvt. Ltd.\n* Mention the position applied for whenever the information is available.\n* Inform the candidate that their application has been successfully received and is currently under review by the Human Resources Department.\n* Politely communicate that only shortlisted candidates will be contacted for further stages of the recruitment process.\n* Request the candidate to wait for further communication regarding interviews, assessments, or additional recruitment procedures.\n* Maintain a professional, respectful, welcoming, and corporate tone at all times.\n* Keep emails concise, polished, and suitable for official business communication.\n* Never guarantee selection, interviews, employment, or future communication.\n* Never include internal HR notes, evaluation scores, screening results, confidential information, or recruitment decisions.\n* If the candidate's name is unavailable, use \"Dear Applicant\".\n* If the position applied for is unavailable, refer to it as \"the position applied for\".\n\nGenerate emails using the following structure:\n\nSubject: Application Received – Kandhari Beverages Pvt. Ltd.\n\nDear Candidate,\n\nThank you for your interest in joining Kandhari Beverages Pvt. Ltd. and for taking the time to submit your application.\n\nWe are pleased to confirm that your application has been successfully received and has been forwarded to our Human Resources team for review.\n\nOur recruitment team will carefully evaluate your qualifications, experience, and suitability for the role. If your profile matches our current requirements, you will be contacted regarding the next stages of the selection process.\n\nWe kindly request your patience during the review period and ask that you wait for further communication from our team.\n\nWe appreciate your interest in building a career with Kandhari Beverages Pvt. Ltd. and thank you for considering us as a potential employer.\n\nKind regards,\n\nHuman Resources Department\nKandhari Beverages Pvt. Ltd.\n\nAlways return only the email subject and email body. Do not provide explanations, notes, comments, markdown formatting, code blocks, or additional text outside the email.\nyou also have to download the resume link in th emy google drive once you got the repsonses fromt eh google form extract the resume lik and download that reume in my google drive folder KBPL resume "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "35f9d4e8-0b74-4b20-9714-40cd77ad8135",
+      "name": "AI Application Acknowledgement"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8ecad34-3eca-4061-a847-0bf0db137189",
+              "name": "fileid",
+              "value": "={{ $('Google Sheets Trigger').item.json['Upload Resume / CV'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        0
+      ],
+      "id": "dd963d54-c4f7-4e9c-b6e0-2cd989ca402e",
+      "name": "Extract Resume Link"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Sheets Trigger').item.json['Upload Resume / CV'] }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e801b83d-0f19-4498-9721-6a3e4a12f34a",
+      "name": "Download Applicant Resume",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4xZUakvPETzhsX5B",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1u0iNSLYx5kB2QRD-3ahCNKXAWIz86tRi",
+          "mode": "list",
+          "cachedResultName": "Resumes Uploaded",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1u0iNSLYx5kB2QRD-3ahCNKXAWIz86tRi"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        352,
+        0
+      ],
+      "id": "d69d175c-57d7-42e5-99af-9ff6dbbfacb4",
+      "name": "Store Resume in KBPL Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4xZUakvPETzhsX5B",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        496,
+        0
+      ],
+      "id": "3243762e-be04-47d6-9e70-eba206a0c6b0",
+      "name": "Download Stored Resume",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4xZUakvPETzhsX5B",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "cf4f5186-f075-43af-b3c3-afc4ab1b5457",
+      "name": "Extract Resume Text"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Job Role:\n{{ $('New Application Received').item.json['Position Applied For'] || $('New Application Received').item.json['Job Role'] || $('New Application Received').item.json['Role Applied'] || 'Not Found' }}\n\nCandidate Resume Text:\n{{ $json.text }}\n\nScreen the candidate against the Job Role and return ONLY valid JSON:\n{\n  \"name\": \"\",\n  \"role\": \"\",\n  \"contact\": \"\",\n  \"email\": \"\",\n  \"result\": \"\",\n  \"rating\": 0,\n  \"reason\": \"\"\n}\n\nRules:\n- Extract name, email and contact from the resume.\n- Use the supplied Job Role exactly in \"role\".\n- Compare qualifications, skills, projects, certifications and experience with the role.\n- Rating must be 0-10.\n- 9-10 = Excellent Match\n- 7-8 = Good Match\n- 5-6.9 = Average / Hold\n- 3-4 = Weak Match\n- 0-2 = Not Suitable\n- Result: Selected for rating >= 7, Hold for 5-6.9, Rejected for <5.\n- If a field cannot be found, return \"Not Found\".\n- Reason must be <= 40 words.\n- No markdown or extra text.",
+        "options": {
+          "systemMessage": "You are an expert HR Resume Screening Assistant. Screen resumes objectively against the supplied job role. Do not invent candidate information. Return valid JSON only."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        192
+      ],
+      "id": "832f6964-2875-47c0-ba7b-08d3fc241c73",
+      "name": "AI Resume Screening Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        336
+      ],
+      "id": "e79a8375-c3a7-47ac-8457-273d982d02f6",
+      "name": "OpenAI Screening Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PIY5V91yRcKnkQGW",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ml4OZN-C1nNYofTpVw0HlulI15AgcOdcqkNz7vwGiaI",
+          "mode": "list",
+          "cachedResultName": "Resume Screening",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ml4OZN-C1nNYofTpVw0HlulI15AgcOdcqkNz7vwGiaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 292157857,
+          "mode": "list",
+          "cachedResultName": "Resume Screening",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ml4OZN-C1nNYofTpVw0HlulI15AgcOdcqkNz7vwGiaI/edit#gid=292157857"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.output?.name || $json.name || 'Not Found' }}",
+            "Role Applied": "={{ $json.output?.role || $json.role || 'Not Found' }}",
+            "Contact No": "={{ $json.output?.contact || $json.contact || 'Not Found' }}",
+            "Gmail": "={{ $json.output?.email || $json.email || 'Not Found' }}",
+            "Rating": "={{ $json.output?.rating || $json.rating || 0 }}",
+            "Result": "={{ $json.output?.result || $json.result || '' }}",
+            "Remarks": "={{ $json.output?.reason || $json.reason || '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Role Applied",
+              "displayName": "Role Applied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact No",
+              "displayName": "Contact No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gmail",
+              "displayName": "Gmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Result",
+              "displayName": "Result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        192
+      ],
+      "id": "80c0705a-1e2e-43fd-8473-d9bd4be7750f",
+      "name": "Save Screening Result",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g1mkkk7DdbRIeJCt",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "782525db-31fa-4f50-a0f2-737bb8538346",
+      "name": "HR Telegram Trigger",
+      "webhookId": "c38f6476-4b35-4325-a5fd-5df8a8cfe5f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "Gs6A1C1kKoDjqzOp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1A6MqHJ3XtXbL3zOKRT-2YqaxzSxBb8eDqX32AD_VgZ4",
+          "mode": "list",
+          "cachedResultName": "Applicant_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6MqHJ3XtXbL3zOKRT-2YqaxzSxBb8eDqX32AD_VgZ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 34203756,
+          "mode": "list",
+          "cachedResultName": "Applicant Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6MqHJ3XtXbL3zOKRT-2YqaxzSxBb8eDqX32AD_VgZ4/edit#gid=34203756"
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "e300f3c0-c84e-4d69-b530-de58199553e2",
+      "name": "Read Applicant Tracker",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VvTbH82IKC1py5Au",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('HR Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "You are the HR Query Assistant for an automated recruitment system.\n\nRead the Applicant Tracker data from Google Sheets and answer the recruiter using only the available candidate records.\n\nYou can answer:\n- Who has the highest rating?\n- Show candidates with rating above 7.\n- Show Selected / Hold / Rejected candidates.\n- Find a candidate by name.\n- Show a candidate's contact/email.\n- Show candidates for a particular role.\n- Summarize a candidate.\n\nFields:\nName, Role Applied, Contact No, Gmail, Rating, Result, Remarks.\n\nDo not invent information. If there is no matching record, say so clearly.\nReturn a concise professional answer."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        0
+      ],
+      "id": "8922bb6c-50cc-4039-82c9-39ecf9bc2401",
+      "name": "HR Query AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        224
+      ],
+      "id": "8f1b0a07-6543-4920-ba27-f9673edc2120",
+      "name": "HR Query Model",
+      "credentials": {
+        "cohereApi": {
+          "id": "U4JJbZ2aOpDXQXrY",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('HR Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output || $json.text || $json.message || 'No result found.' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "a11e9a00-97f8-46e9-8c5e-22a855c1ac1d",
+      "name": "Send HR Response",
+      "webhookId": "4cd2ecde-d546-43fa-a061-67224eb78aac",
+      "credentials": {
+        "telegramApi": {
+          "id": "Gs6A1C1kKoDjqzOp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1A6MqHJ3XtXbL3zOKRT-2YqaxzSxBb8eDqX32AD_VgZ4",
+          "mode": "list",
+          "cachedResultName": "Applicant_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6MqHJ3XtXbL3zOKRT-2YqaxzSxBb8eDqX32AD_VgZ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 34203756,
+          "mode": "list",
+          "cachedResultName": "Applicant Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6MqHJ3XtXbL3zOKRT-2YqaxzSxBb8eDqX32AD_VgZ4/edit#gid=34203756"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        208
+      ],
+      "id": "a575f778-50de-4559-bec5-20379d2ad33e",
+      "name": "Applicant Tracker Tool",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VvTbH82IKC1py5Au",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "HR Assistant Bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HR Assistant Bot",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Assistant Bot": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "HR Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Applicant Tracker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Applicant Tracker": {
+      "main": [
+        [
+          {
+            "node": "HR Query AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Query Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HR Query AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Applicant Tracker Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "HR Query AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Query AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send HR Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9e606e9d-27a3-443c-b163-62bfa84da793",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a638cd75d73f1797bedc48fc672d8879d7560fbde050983aa7994e9864b11ee4",
+    "description": "End-to-end automated recruitment workflow: Google Form application intake, automatic acknowledgement email, resume retrieval and storage, PDF text extraction, AI resume screening and scoring, Google Sheets candidate tracking, and Telegram HR query assistant."
+  },
+  "nodeGroups": [],
+  "id": "Erdq605qKc1fIrxL",
+  "tags": []
+}
